@@ -29,4 +29,5 @@ class Database:
         data = self.curr.execute(
             "SELECT * FROM users WHERE username == ?", (user.username,)
         ).fetchone()
-        return data
+        response = User(username=data[0], password=data[1], role=data[2])
+        return response

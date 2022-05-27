@@ -1,9 +1,9 @@
 from passlib.context import CryptContext
 from xss_demo.db import Database
 from xss_demo.models import User
-from config import settings
+from xss_demo.config import settings
 
-SECRET_KEY = settings.secret_key
+SECRET = settings.secret_key
 ALGORITHM = "HS256"
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
