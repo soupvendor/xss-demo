@@ -1,10 +1,11 @@
-from fastapi import FastAPI, Depends, HTTPException
-from xss_demo.db import Database
-from xss_demo.config import settings
-from xss_demo.crud import create_comment, retrieve_comment, create_user
-from xss_demo.models import Comment, CommentResponse, User
-from passlib.context import CryptContext
+from fastapi import Depends, FastAPI, HTTPException
 from fastapi.security import OAuth2AuthorizationCodeBearer, OAuth2PasswordRequestForm
+from passlib.context import CryptContext
+
+from xss_demo.config import settings
+from xss_demo.crud import create_comment, create_user, retrieve_comment
+from xss_demo.db import Database
+from xss_demo.models import Comment, CommentResponse, User
 
 app = FastAPI()
 
@@ -34,7 +35,6 @@ def get_comment(comment_id: int, db: Database = Depends(get_db)) -> CommentRespo
 def post_user(user: User, db: Database = Depends(get_db)) -> User:
     if user:
         return create_user(user, db)
-
 
 
 @app.post("/token")

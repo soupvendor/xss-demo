@@ -1,6 +1,6 @@
+from xss_demo.auth import get_password_hash
 from xss_demo.db import Database
 from xss_demo.models import Comment, CommentResponse, User
-from xss_demo.auth import get_password_hash
 
 
 def create_comment(comment: Comment, db: Database) -> CommentResponse:
@@ -12,9 +12,7 @@ def create_comment(comment: Comment, db: Database) -> CommentResponse:
     )
     db.conn.commit()
     new_id = db.curr.lastrowid
-    response = CommentResponse(
-        user_id=comment.user_id, comment=comment.comment, id=new_id
-    )
+    response = CommentResponse(user_id=comment.user_id, comment=comment.comment, id=new_id)
     return response
 
 
