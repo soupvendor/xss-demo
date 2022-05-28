@@ -24,7 +24,8 @@ class Database:
         data = self.curr.execute("SELECT * FROM comments WHERE id == ?", (id_,)).fetchone()
         return data
 
-    def select_user(self, user: User) -> tuple:
-        data = self.curr.execute("SELECT * FROM users WHERE username == ?", (user.username,)).fetchone()
-        response = User(username=data[0], password=data[1], role=data[2])
-        return response
+    def select_user(self, username: str) -> User:
+        data = self.curr.execute("SELECT * FROM users WHERE username == ?", (username,)).fetchone()
+        if data:
+            response = User(username=data[0], password=data[1], role=data[2])
+            return response

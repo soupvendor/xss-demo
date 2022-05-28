@@ -22,6 +22,12 @@ def retrieve_comment(id_: int, db: Database) -> CommentResponse:
     return response
 
 
+def list_comments(db: Database):
+    comments = db.curr.execute("SELECT * FROM comments").fetchall()
+    data = [CommentResponse(id=entry[0], user_id=entry[1], comment=entry[2]) for entry in comments]
+    return data
+
+
 def create_user(user: User, db: Database) -> User:
     hashed_pw = get_password_hash(user.password)
     db.curr.execute(
@@ -31,6 +37,5 @@ def create_user(user: User, db: Database) -> User:
         (user.username, hashed_pw, user.role),
     )
     db.conn.commit()
-    new_user = db.select_user(user)
-    response = User(username=new_user[0], password=new_user[1], role=new_user[2])
-    return response
+    new_user = db.select_user(user.username)
+    return new_user
