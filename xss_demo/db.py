@@ -1,6 +1,10 @@
 import sqlite3
 
-from xss_demo.models import User
+from xss_demo.config import settings
+
+
+def get_db():
+    yield Database(settings.db_path)
 
 
 class Database:
@@ -23,9 +27,3 @@ class Database:
     def select_row_by_id(self, id_: int) -> tuple:
         data = self.curr.execute("SELECT * FROM comments WHERE id == ?", (id_,)).fetchone()
         return data
-
-    def select_user(self, username: str) -> User:
-        data = self.curr.execute("SELECT * FROM users WHERE username == ?", (username,)).fetchone()
-        if data:
-            response = User(username=data[0], password=data[1], role=data[2])
-            return response

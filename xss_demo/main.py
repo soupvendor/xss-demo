@@ -1,19 +1,21 @@
 from datetime import timedelta
 
 from fastapi import Depends, FastAPI, HTTPException, status
+from fastapi.responses import JSONResponse
 from fastapi.security import OAuth2PasswordRequestForm
 
-from xss_demo.auth import authenticate_user, create_access_token, oauth2_scheme
+from xss_demo.auth import (
+    authenticate_user,
+    create_access_token,
+    get_current_user,
+    oauth2_scheme,
+)
 from xss_demo.config import settings
 from xss_demo.crud import create_comment, create_user, list_comments, retrieve_comment
-from xss_demo.db import Database
+from xss_demo.db import Database, get_db
 from xss_demo.models import Comment, CommentResponse, Token, User
 
 app = FastAPI()
-
-
-def get_db():
-    yield Database(settings.db_path)
 
 
 @app.post("/comments/", status_code=200)
@@ -50,9 +52,25 @@ def get_login_token(form_data: OAuth2PasswordRequestForm = Depends(), db: Databa
         )
     access_token_expires = timedelta(minutes=settings.access_token_expires_minutes)
     access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    # response = JSONResponse(content={})
+    # response.set_cookie(key="session", value=access_token)
+    # return response
     return {"access_token": access_token, "token_type": "bearer"}
 
 
 @app.get("/comments/")
 def list_all_comments(token: str = Depends(oauth2_scheme), db: Database = Depends(get_db)):
     return list_comments(db)
+
+
+@app.post("/cookie/")
+def create_cookie():
+    content = {"message": "Come to the dark side, we have cookies"}
+    response = JSONResponse(content=content)
+    response.set_cookie(key="fakesession", value="fake-cookie-session-value")
+    return response
+
+
+@app.get("/users/me/", response_model=User)
+def read_users_me(current_user: User = Depends(get_current_user)):
+    return current_user
